@@ -1,12 +1,15 @@
 import { useContext, useState } from "react";
 import { BookContext } from "../Context/BookContext";
 import { CartContext } from "../Context/CartContext";
+import { AuthContext } from "../Context/AuthContext";
 
 export default function BookItem({ book }) {
-  const { updateBook, deleteBook, addComment, likeBook  } = useContext(BookContext);
+  const { updateBook, deleteBook, addComment, likeBook } =
+    useContext(BookContext);
   const { addToCart } = useContext(CartContext);
-    const [comment, setComment] = useState("");
+  const [comment, setComment] = useState("");
   const [editMode, setEditMode] = useState(false);
+  const { user } = useContext(AuthContext);
 
   const [form, setForm] = useState({
     title: book.title,
@@ -28,8 +31,8 @@ export default function BookItem({ book }) {
           <input name="author" value={form.author} onChange={handleChange} />
           <input
             name="price"
-            value={form.price}
             type="number"
+            value={form.price}
             onChange={handleChange}
           />
           <input
@@ -38,8 +41,6 @@ export default function BookItem({ book }) {
             onChange={handleChange}
           />
           <input name="image" value={form.image} onChange={handleChange} />
-
-         
 
           <button
             onClick={() => {
@@ -51,13 +52,12 @@ export default function BookItem({ book }) {
           </button>
 
           <button onClick={() => setEditMode(false)}>Cancel</button>
-
         </>
       ) : (
         // Same as if / else
         <>
           <img
-            src={book.image}
+             src={book.image}
             alt={book.title}
             style={{ width: "120px", borderRadius: "8px" }}
           />
@@ -67,8 +67,12 @@ export default function BookItem({ book }) {
           <p>${book.price}</p>
           <p>Category: {book.category}</p>
 
-          <button onClick={() => likeBook(book._id)}>❤️ {book.likes}</button>
+          {/* Like */}
+          <button onClick={() => likeBook(book._id)}>
+            ❤️ {book.likes ?? 0}
+          </button>
 
+          {/* Comments */}
           <div style={{ marginTop: "10px" }}>
             <input
               type="text"
@@ -78,35 +82,44 @@ export default function BookItem({ book }) {
             />
 
             <button
-  onClick={() => {
-    if (!comment.trim()) return; 
-    addComment(book._id, comment);
-    setComment("");
-  }}
->
-  Add Comment
-</button>
+              onClick={() => {
+                if (!comment.trim()) return;
+                addComment(book._id, comment);
+                setComment("");
+              }}
+            >
+              Add Comment
+            </button>
           </div>
-
-     {book.comments?.map((c, index) => (
-  <li key={index}>
-    {c.text}
-    <small style={{ marginLeft: "8px", color: "#777" }}>
-      ({new Date(c.createdAt).toLocaleDateString()})
-    </small>
-  </li>
-))}
+          <ul style={{ paddingLeft: "16px" }}>
+            {book.comments?.map((c, index) => (
+              <li key={index}>
+                {c.text}
+                {c.createdAt && (
+                  <small style={{ marginLeft: "8px", color: "#777" }}>
+                    ({new Date(c.createdAt).toLocaleDateString()})
+                  </small>
+                )}
+              </li>
+            ))}
+          </ul>
 
           <button
             onClick={() => {
               addToCart(book);
             }}
           >
-            Add to Cart
+            {" "}
+            Add to Cart{" "}
           </button>
 
-          <button onClick={() => setEditMode(true)}>Edit</button>
-          <button onClick={() => deleteBook(book._id)}>Delete</button>
+          {/* Admin only */}
+          {user?.isAdmin && (
+            <>
+              <button onClick={() => setEditMode(true)}>Edit</button>
+              <button onClick={() => deleteBook(book._id)}>Delete</button>
+            </>
+          )}
         </>
       )}
     </div>

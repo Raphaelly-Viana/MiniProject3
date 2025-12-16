@@ -1,18 +1,22 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 import { BookProvider } from "./Context/BookContext";
+import { CartProvider } from "./Context/CartContext";
+import { AuthProvider } from "./Context/AuthContext";
 
 import HomePage from "./Pages/HomePage";
 import BookListPage from "./Pages/BookListPage";
 import CartPage from "./Pages/CartPage"; 
 import Nav from "./Components/Nav";
-import { CartProvider } from "./Context/CartContext";
 import CheckoutPage from "./Pages/CheckoutPage";
+
 
 
 
  function App() {
   return (
+    <AuthProvider>
     <CartProvider>
     <BookProvider>
       <Router>
@@ -26,6 +30,7 @@ import CheckoutPage from "./Pages/CheckoutPage";
       </Router>
     </BookProvider>
     </CartProvider>
+    </AuthProvider>
   );
 }
 
