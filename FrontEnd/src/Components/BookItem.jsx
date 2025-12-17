@@ -60,7 +60,7 @@ function BookItem({ book }) {
           <img
              src={book.image}
             alt={book.title}
-            style={{ width: "120px", borderRadius: "8px" }}
+            style={{ borderRadius: "8px" }}
           />
           <p>
             <strong>{book.title}</strong> — {book.author}

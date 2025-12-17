@@ -4,48 +4,61 @@ const router = express.Router();
 
 // Add to cart
 router.post("/add", async (req, res) => {
-  const { book } = req.body;
+  try {
+    const { bookId } = req.body;
 
-  let cart = await Cart.findOne();
-  if (!cart) {
-    cart = new Cart({ items: [] });
+    let cart = await Cart.findOne();
+    if (!cart) cart = new Cart({ items: [] });
+
+    const existingItem = cart.items.find((item) => {
+  if (!item.book) return false;
+
+  return item.book.toString() === bookId ||
+         item.book._id?.toString() === bookId;
+});
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      cart.items.push({ book: bookId, quantity: 1 });
+    }
+
+    await cart.save();
+    await cart.populate("items.book");
+
+    res.json(cart);
+  } catch (err) {
+    console.error("ADD TO CART ERROR:", err);
+    res.status(500).json({ error: "Failed to add to cart" });
   }
-
-  const existingItem = cart.items.find(
-    (item) => item.book._id.toString() === book._id
-  );
-
-  if (existingItem) {
-    existingItem.quantity += 1;
-  } else {
-    cart.items.push({
-      book,
-      quantity: 1,
-    });
-  }
-
-  await cart.save();
-  res.json(cart);
 });
 
 // Remove from cart
 router.post("/remove", async (req, res) => {
-  const { bookId } = req.body;
+  try {
+    const { bookId } = req.body;
 
-  let cart = await Cart.findOne();
-  if (!cart) return res.json({ items: [] });
+    let cart = await Cart.findOne();
+    if (!cart) return res.json({ items: [] });
 
-  cart.items = cart.items.filter(
-    (item) => item.book._id.toString() !== bookId
-  );
+    cart.items = cart.items.filter(
+      (item) =>
+        item.book._id?.toString() !== bookId &&
+        item.book.toString() !== bookId
+    );
 
-  await cart.save();
-  res.json(cart);
+    await cart.save();
+    await cart.populate("items.book");
+
+    res.json(cart);
+  } catch (err) {
+    console.error("REMOVE FROM CART ERROR:", err);
+    res.status(500).json({ error: "Failed to remove item" });
+  }
 });
 
 // Get cart
 router.get("/", async (req, res) => {
-  const cart = await Cart.findOne();
+  const cart = await Cart.findOne().populate("items.book");
   res.json(cart || { items: [] });
 });
 

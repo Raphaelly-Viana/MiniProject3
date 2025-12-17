@@ -15,10 +15,10 @@ export function CartProvider({ children }) {
   }, []);
 
   // Add item in cart
-  const addToCart = async (book) => {
+  const addToCart = async (bookId) => {
     try {
       const res = await axios.post("/api/cart/add", {
-        book,
+        bookId,
       });
 
       setCart(res.data);

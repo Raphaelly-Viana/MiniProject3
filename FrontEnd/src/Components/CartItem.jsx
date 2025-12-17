@@ -4,6 +4,8 @@ import { CartContext } from "../Context/CartContext";
 function CartItem({ item }) {
   const { removeFromCart } = useContext(CartContext);
 
+  if (!item?.book) return null; //protction against underfined
+
   return (
     <div className="cart-card">
       <img
@@ -16,6 +18,7 @@ function CartItem({ item }) {
         <h4>{item.book.title}</h4>
         <p>Price: ${item.book.price}</p>
         <p>Quantity: {item.quantity}</p>
+        
 
         <button onClick={() => removeFromCart(item.book._id)}>
           Remove
