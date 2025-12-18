@@ -6,13 +6,10 @@ import { Link } from "react-router-dom";
     <div className="home-container">
       
 
-      <h1 className="home-title">NextChapter 📖 </h1>
-      <p className="home-subtitle">Your next read starts here </p>
-
-      <p className="home-text">
-        Turn the page. Start your next chapter.
-      </p>
-
+      <h2 className="welcome-title">Welcome to NextChapter</h2>
+<p className="welcome-subtitle">
+  Turn the page. Start your next chapter.
+</p>
       <Link to="/books">
         <button className="home-button">  📚 Browse Collection</button>
       </Link>
